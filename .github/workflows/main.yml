@@ -1,4 +1,4 @@
-name: CI
+name: Parla auth CD
 
 on:
   push:
@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Build parla 
+    - name: Build checkin API
       run: |
-       docker build -t docker.pkg.github.com/ffauchille/parla:v1 .
+       docker build -t docker.pkg.github.com/ffauchille/parla/parla-auth:v1 .
        docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }}
-       docker push docker.pkg.github.com/ffauchille/parla:v1
-    - name: Deploy
+       docker push docker.pkg.github.com/ffauchille/parla/parla-auth:v1
+    - name: Deploy checkin API
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
@@ -23,9 +23,16 @@ jobs:
         password: ${{ secrets.SSH_PASSWORD }}
         script: |
           docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }}
-          docker stop $(docker ps -q) || true
-          docker rm $(docker ps -aq) || true
-          docker pull ${{ steps.docker.outputs.IMAGE_SHA_NAME }}
-          docker run -d -p 80:80 ${{ steps.docker.outputs.IMAGE_SHA_NAME }}
-          
-        
+          docker stop parla-auth-v1 || true
+          docker rm parla-auth-v1 || true
+          docker pull docker.pkg.github.com/ffauchille/parla/parla-auth:v1
+          # Groupe SIGL: use the following line instead
+          # docker run -d -p 80:80 --name parla-auth-v1 docker.pkg.github.com/ffauchille/parla/parla-auth:v1          
+          # and comment the next one
+          docker run -d --network="mobynet" \
+            --label traefik.enable=true \
+            --label traefik.docker.network=mobynet \
+            --label traefik.frontend.rule=Host:parla-auth.arla-sigl.fr \
+            --label traefik.frontend.port=80 \
+            --name parla-auth-v1 \
+            docker.pkg.github.com/ffauchille/parla/parla-auth:v1

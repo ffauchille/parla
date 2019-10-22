@@ -1,0 +1,23 @@
+{
+  "name": "parla",
+  "version": "1.0.0",
+  "description": "Demo pour cours de ci/cd",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server -p 8080 ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ffauchille/parla.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ffauchille/parla/issues"
+  },
+  "homepage": "https://github.com/ffauchille/parla#readme",
+  "devDependencies": {
+    "http-server": "^0.11.1"
+  }
+}
