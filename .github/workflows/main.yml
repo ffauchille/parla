@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: 
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build parla 
+      run: |
+       docker build -t docker.pkg.github.com/ffauchille/parla:v1 .
+       docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }}
+       docker push docker.pkg.github.com/ffauchille/parla:v1
+    - name: Deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        script: |
+          docker login docker.pkg.github.com -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }}
+          docker stop $(docker ps -q) || true
+          docker rm $(docker ps -aq) || true
+          docker pull ${{ steps.docker.outputs.IMAGE_SHA_NAME }}
+          docker run -d -p 80:80 ${{ steps.docker.outputs.IMAGE_SHA_NAME }}
+          
+        
