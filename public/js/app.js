@@ -52,7 +52,6 @@ const updateUI = async () => {
 
 window.onload = async () => {
   console.log("init auth0 SDK...");
-  window.location.origin = window.location.window.location.origin;
   try {
     await configureClient();
     console.log("auth0 SDK init successfully");
