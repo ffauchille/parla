@@ -2,8 +2,8 @@ let auth0 = null;
 
 const configureClient = async () => {
   auth0 = await createAuth0Client({
-    domain: "<YOUR_OAUTH0_DOMAIN>",
-    client_id: "<YOUR_CLIENT_ID_FROM_AUTH0>"
+    domain: "forchill.eu.auth0.com",
+    client_id: "32T5BpUe2GHFXYX1NuLj784LrFVHKElf"
   });
 };
 
