@@ -3,7 +3,7 @@ name: Parla auth CD
 on:
   push:
     branches: 
-      - master
+      - auth0
 
 jobs:
   build:
